@@ -1,0 +1,46 @@
+{
+  "name": "kava-gql",
+  "version": "0.0.1",
+  "description": "Kava GraphQL",
+  "author": "Angelo Recca <hello@bitsong.io>",
+  "scripts": {
+    "start": "babel-watch src/server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server-express": "^1.4.0",
+    "bech32": "^1.1.3",
+    "bluebird": "^3.5.5",
+    "callback-to-async-iterator": "^1.1.1",
+    "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
+    "express": "^4.17.1",
+    "graphql": "^14.5.4",
+    "graphql-relay": "^0.6.0",
+    "graphql-subscriptions": "^1.1.0",
+    "graphql-tools": "^2.24.0",
+    "js-sha256": "^0.9.0",
+    "merge-graphql-schemas": "^1.7.0",
+    "mongoose": "^5.0.14",
+    "mongoose-paginate": "^5.0.3",
+    "morgan": "^1.9.0",
+    "node-fetch": "^2.6.0",
+    "relay-mongodb-connection": "^2.1.0",
+    "serve-favicon": "^2.5.0",
+    "serve-static": "^1.13.2",
+    "spdy": "^3.4.7",
+    "subscriptions-transport-ws": "^0.9.16"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-watch": "^2.0.7",
+    "eslint": "^6.2.2",
+    "eslint-plugin-vue": "^5.2.3"
+  }
+}
