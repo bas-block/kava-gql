@@ -190,19 +190,6 @@ export default {
       } catch (err) {
         throw err;
       }
-    },
-    validatorsUnbonding: async (root, args, context) => {
-      try {
-        const validatorsUnbonding = await getValidatorsUnbonding();
-
-        return validatorsUnbonding.map(validator => {
-          return {
-            details: validator
-          };
-        });
-      } catch (err) {
-        throw err;
-      }
     }
   }
 };
