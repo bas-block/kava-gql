@@ -3,7 +3,7 @@ export default `
   type Query {
     allBlocks(pagination: PaginationInput = {}, sort: BlockSortInput = {}): BlockConnection!
     allTransactions(filters: TransactionFiltersInput = {}, pagination: PaginationInput = {}, sort: TransactionSortInput = {}): TransactionConnection!
-    allMissedBlocks(pagination: PaginationInput = {}, sort: MissedBlockSortInput = {}): MissedBlockConnection!
+    allMissedBlocks(filters: MissedBlockFiltersInput = {}, pagination: PaginationInput = {}, sort: MissedBlockSortInput = {}): MissedBlockConnection!
     allValidators(pagination: PaginationInput = {}, sort: ValidatorSortInput = {}): ValidatorConnection!
 
     blocks(

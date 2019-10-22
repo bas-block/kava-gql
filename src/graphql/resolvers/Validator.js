@@ -90,67 +90,68 @@ export default {
     unbonding_delegations: async validator => {
       return await getUnbondingDelegations(validator.operator_address);
     },
-    missed_blocks: async validator => {
-      return await MissedBlock.find()
-        .populate({
-          path: "validators",
-          match: { address: { $in: validator.address } }
-        })
-        .where("validators")
-        .ne([]);
-    }
+    missed_blocks: async validator =>
+      await MissedBlock.find({
+        validators: { $in: validator._id }
+      }).populate({
+        path: "validators"
+      })
   },
   Query: {
     allValidators: async (_, args) => {
-      const query = {};
-      const results = await Validator.paginate(query, {
-        page: args.pagination.page,
-        limit: args.pagination.limit,
-        sort: {
-          [args.sort.field]: args.sort.direction
+      try {
+        const query = {};
+        const results = await Validator.paginate(query, {
+          page: args.pagination.page,
+          limit: args.pagination.limit,
+          sort: {
+            [args.sort.field]: args.sort.direction
+          }
+        });
+        const tendermintValidators = await getTendermintValidators();
+        let docs = results.docs.map(doc => {
+          const tendermintData = tendermintValidators.find(
+            v => v.address === bech32PubkeyToAddress(doc.consensus_pubkey)
+          );
+
+          return { ...doc._doc, ...tendermintData };
+        });
+
+        if (args.sort.field === "voting_power" && args.sort.direction === 1) {
+          docs = docs.sort((a, b) => a.voting_power - b.voting_power);
+        } else if (
+          args.sort.field === "voting_power" &&
+          args.sort.direction === -1
+        ) {
+          docs = docs.sort((a, b) => b.voting_power - a.voting_power);
         }
-      });
-      const tendermintValidators = await getTendermintValidators();
-      let docs = results.docs.map(doc => {
-        const tendermintData = tendermintValidators.find(
-          v => v.address === bech32PubkeyToAddress(doc.consensus_pubkey)
-        );
 
-        return { ...doc._doc, ...tendermintData };
-      });
-
-      if (args.sort.field === "voting_power" && args.sort.direction === 1) {
-        docs = docs.sort((a, b) => a.voting_power - b.voting_power);
-      } else if (
-        args.sort.field === "voting_power" &&
-        args.sort.direction === -1
-      ) {
-        docs = docs.sort((a, b) => b.voting_power - a.voting_power);
+        return {
+          docs: docs,
+          pageInfo: {
+            total: results.total,
+            limit: results.limit,
+            page: results.page,
+            pages: results.pages
+          }
+        };
+      } catch (err) {
+        throw err;
       }
-
-      return {
-        docs: docs,
-        pageInfo: {
-          total: results.total,
-          limit: results.limit,
-          page: results.page,
-          pages: results.pages
-        }
-      };
     },
     validator: async (root, args, context) => {
       try {
         const tendermintValidators = await getTendermintValidators();
-        const validatorDetails = await getValidator(args.operatorAddress);
+        const validator = await Validator.findOne({
+          operator_address: args.operatorAddress
+        });
         const tendermintData = tendermintValidators.find(
-          v =>
-            v.address ===
-            bech32PubkeyToAddress(validatorDetails.consensus_pubkey)
+          v => v.address === bech32PubkeyToAddress(validator.consensus_pubkey)
         );
 
         return {
           ...tendermintData,
-          details: validatorDetails
+          ...validator._doc
         };
       } catch (err) {
         throw err;

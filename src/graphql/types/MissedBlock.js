@@ -11,6 +11,9 @@ export default `
     height
     moniker
   }
+  input MissedBlockFiltersInput {
+    height: Int
+  }
 
   type MissedBlock {
     height: Int

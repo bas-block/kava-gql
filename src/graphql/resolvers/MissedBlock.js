@@ -3,7 +3,16 @@ import MissedBlock from "../../models/MissedBlockModel";
 export default {
   Query: {
     allMissedBlocks: async (_, args) => {
-      const query = {};
+      let query = {};
+
+      if (args.filters) {
+        query = args.filters;
+
+        if (args.filters.height) {
+          query = { height: args.filters.height };
+        }
+      }
+
       const sort_by_height =
         args.sort.field === "height"
           ? {
