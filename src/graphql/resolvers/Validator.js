@@ -84,6 +84,8 @@ const getUnbondingDelegations = validatorAddr =>
 
 export default {
   Validator: {
+    self_shares: validator =>
+      validator.self_shares ? validator.self_shares : 0,
     delegations: async validator => {
       return await getDelegations(validator.operator_address);
     },
