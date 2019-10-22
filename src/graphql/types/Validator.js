@@ -10,6 +10,7 @@ export default `
   enum ValidatorSortField {
     voting_power
     moniker
+    commission
   }
   type Validator {
     consensus_pubkey: String

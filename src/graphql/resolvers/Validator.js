@@ -126,6 +126,21 @@ export default {
           args.sort.direction === -1
         ) {
           docs = docs.sort((a, b) => b.voting_power - a.voting_power);
+        } else if (
+          args.sort.field === "commission" &&
+          args.sort.direction === 1
+        ) {
+          docs = docs.sort(
+            (a, b) =>
+              a.commission.commission_rates.rate -
+              b.commission.commission_rates.rate
+          );
+        } else {
+          docs = docs.sort(
+            (a, b) =>
+              b.commission.commission_rates.rate -
+              a.commission.commission_rates.rate
+          );
         }
 
         return {
