@@ -2,6 +2,7 @@ import * as bech32 from "bech32";
 import config from "../../config";
 import fetch from "node-fetch";
 import { sha256 } from "js-sha256";
+import Validator from "../../models/ValidatorModel";
 
 const pubkeyToBech32 = (pubkey, prefix) => {
   // '1624DE6420' is ed25519 pubkey prefix
@@ -111,24 +112,6 @@ export default {
       return null;
     }
   },
-  ValidatorDetails: {
-    delegator_address: validator => {
-      return operatorAddrToAccoutAddr(
-        validator.operator_address,
-        config.prefix.bech32PrefixAccAddr
-      );
-    },
-    self_shares: async validator => {
-      const delegator_address = operatorAddrToAccoutAddr(
-        validator.operator_address,
-        config.prefix.bech32PrefixAccAddr
-      );
-      const delegations = await getDelegations(validator.operator_address);
-
-      return delegations.find(v => v.delegator_address === delegator_address)
-        .shares;
-    }
-  },
   Validator: {
     delegations: async validator => {
       return await getDelegations(validator.details.operator_address);
@@ -138,7 +121,29 @@ export default {
     }
   },
   Query: {
+    allValidators: async (_, args) => {
+      const query = {};
+      const results = await Validator.paginate(query, {
+        page: args.pagination.page,
+        limit: args.pagination.limit,
+        sort: {
+          [args.sort.field]: args.sort.direction
+        }
+      });
+
+      return {
+        docs: results.docs,
+        pageInfo: {
+          total: results.total,
+          limit: results.limit,
+          page: results.page,
+          pages: results.pages
+        }
+      };
+    },
     validator: async (root, args, context) => {
+      console.log(root);
+      console.log(args);
       try {
         const tendermintValidators = await getTendermintValidators();
         const validatorDetails = await getValidator(args.operatorAddress);

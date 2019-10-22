@@ -97,4 +97,5 @@ validatorSchema.index({ address: 1 }, { name: "validatorAddressIndex" });
 
 validatorSchema.plugin(mongoosePaginate);
 
-export const Validator = mongoose.model("Validator", validatorSchema);
+const Validator = mongoose.model("Validator", validatorSchema);
+export default Validator;

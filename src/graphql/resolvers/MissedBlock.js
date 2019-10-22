@@ -4,17 +4,26 @@ export default {
   Query: {
     allMissedBlocks: async (_, args) => {
       const query = {};
+      const sort_by_height =
+        args.sort.field === "height"
+          ? {
+              height: args.sort.direction
+            }
+          : {};
+
+      const sort_by_moniker =
+        args.sort.field === "moniker"
+          ? {
+              "description.moniker": args.sort.direction
+            }
+          : {};
+
       const results = await MissedBlock.paginate(query, {
         page: args.pagination.page,
-        limit: args.pagination.limit
+        limit: args.pagination.limit,
+        sort: sort_by_height,
+        populate: [{ path: "validators", options: { sort: sort_by_moniker } }]
       });
-      // const results = await Block.paginate(query, {
-      //   page: args.pagination.page,
-      //   limit: args.pagination.limit,
-      //   sort: {
-      //     [args.sort.field]: args.sort.direction
-      //   }
-      // });
 
       return {
         docs: results.docs,
