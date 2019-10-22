@@ -8,7 +8,7 @@ const stargate =
 const rpc =
   process.env.RPC ||
   (dev
-    ? `https://lcd.kava-testnet-3000.bas.network`
+    ? `https://rpc.kava-testnet-3000.bas.network`
     : `https://rpc.kava-testnet-3000.bas.network`);
 
 const dbUri = `mongodb://localhost:27017/kava?replicaSet=replica01`;

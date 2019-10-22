@@ -23,5 +23,6 @@ export default `
     ): [Account]
     account(address: String! valoper: String): Account!
     validator(operatorAddress: String!): Validator!
+    allMissedBlocks(pagination: PaginationInput = {}): MissedBlockConnection!
   }
 `;
