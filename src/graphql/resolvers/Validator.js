@@ -3,6 +3,8 @@ import config from "../../config";
 import fetch from "node-fetch";
 import { sha256 } from "js-sha256";
 import Validator from "../../models/ValidatorModel";
+import MissedBlock from "../../models/MissedBlockModel";
+import mongoose from "mongoose";
 
 const pubkeyToBech32 = (pubkey, prefix) => {
   // '1624DE6420' is ed25519 pubkey prefix
@@ -28,27 +30,6 @@ const bech32PubkeyToAddress = consensus_pubkey => {
 const operatorAddrToAccoutAddr = (operatorAddr, prefix) => {
   const address = bech32.decode(operatorAddr);
   return bech32.encode(prefix, address.words);
-};
-
-const getValidatorProfileUrl = identity => {
-  if (identity.length == 16) {
-    return fetch(
-      `https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=${identity}&fields=pictures`
-    )
-      .then(res => res.json())
-      .then(response => {
-        let them = response.them;
-        return (
-          them &&
-          them.length &&
-          them[0].pictures &&
-          them[0].pictures.primary &&
-          them[0].pictures.primary.url
-        );
-      });
-  }
-
-  return null;
 };
 
 const getTendermintValidators = () =>
@@ -102,22 +83,21 @@ const getUnbondingDelegations = validatorAddr =>
     });
 
 export default {
-  ValidatorDescription: {
-    avatar: validatorDescription => {
-      const identity = validatorDescription.identity;
-
-      if (identity)
-        return getValidatorProfileUrl(validatorDescription.identity);
-
-      return null;
-    }
-  },
   Validator: {
     delegations: async validator => {
-      return await getDelegations(validator.details.operator_address);
+      return await getDelegations(validator.operator_address);
     },
     unbonding_delegations: async validator => {
-      return await getUnbondingDelegations(validator.details.operator_address);
+      return await getUnbondingDelegations(validator.operator_address);
+    },
+    missed_blocks: async validator => {
+      return await MissedBlock.find()
+        .populate({
+          path: "validators",
+          match: { address: { $in: validator.address } }
+        })
+        .where("validators")
+        .ne([]);
     }
   },
   Query: {
@@ -130,9 +110,26 @@ export default {
           [args.sort.field]: args.sort.direction
         }
       });
+      const tendermintValidators = await getTendermintValidators();
+      let docs = results.docs.map(doc => {
+        const tendermintData = tendermintValidators.find(
+          v => v.address === bech32PubkeyToAddress(doc.consensus_pubkey)
+        );
+
+        return { ...doc._doc, ...tendermintData };
+      });
+
+      if (args.sort.field === "voting_power" && args.sort.direction === 1) {
+        docs = docs.sort((a, b) => a.voting_power - b.voting_power);
+      } else if (
+        args.sort.field === "voting_power" &&
+        args.sort.direction === -1
+      ) {
+        docs = docs.sort((a, b) => b.voting_power - a.voting_power);
+      }
 
       return {
-        docs: results.docs,
+        docs: docs,
         pageInfo: {
           total: results.total,
           limit: results.limit,
@@ -142,8 +139,6 @@ export default {
       };
     },
     validator: async (root, args, context) => {
-      console.log(root);
-      console.log(args);
       try {
         const tendermintValidators = await getTendermintValidators();
         const validatorDetails = await getValidator(args.operatorAddress);
@@ -157,41 +152,6 @@ export default {
           ...tendermintData,
           details: validatorDetails
         };
-      } catch (err) {
-        throw err;
-      }
-    },
-    validators: async (root, args, context) => {
-      try {
-        const tendermintValidators = await getTendermintValidators();
-        const stargateValidators = await getValidators();
-        const validatorsUnbonding = await getValidatorsUnbonding();
-
-        const activeValidators = tendermintValidators.map(tmVal => {
-          const validatorDetails = stargateValidators.find(
-            v =>
-              v.consensus_pubkey ===
-              pubkeyToBech32(tmVal.pub_key, config.prefix.bech32PrefixConsPub)
-          );
-
-          return {
-            ...tmVal,
-            details: validatorDetails
-          };
-        });
-
-        const inactiveValidators = validatorsUnbonding.map(validator => {
-          return {
-            address: null,
-            voting_power: null,
-            proposer_priority: null,
-            details: validator
-          };
-        });
-
-        const allValidators = [...activeValidators, ...inactiveValidators];
-
-        return allValidators;
       } catch (err) {
         throw err;
       }

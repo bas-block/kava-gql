@@ -3,17 +3,14 @@ export default `
   type Query {
     allBlocks(pagination: PaginationInput = {}, sort: BlockSortInput = {}): BlockConnection!
     allTransactions(filters: TransactionFiltersInput = {}, pagination: PaginationInput = {}, sort: TransactionSortInput = {}): TransactionConnection!
+    allMissedBlocks(pagination: PaginationInput = {}, sort: MissedBlockSortInput = {}): MissedBlockConnection!
+    allValidators(pagination: PaginationInput = {}, sort: ValidatorSortInput = {}): ValidatorConnection!
+
     blocks(
       page: Int
       limit: Int
     ): [Block]
     block(height: Int): Block
-    validators(
-      page: Int
-      limit: Int
-      sort: String
-      sortDirection: String
-    ): [Validator]
     delegations(operatorAddress: String!): Delegations
     accounts(
       page: Int
@@ -23,8 +20,5 @@ export default `
     ): [Account]
     account(address: String! valoper: String): Account!
     validator(operatorAddress: String!): Validator!
-
-    allMissedBlocks(pagination: PaginationInput = {}, sort: MissedBlockSortInput = {}): MissedBlockConnection!
-    allValidators(pagination: PaginationInput = {}, sort: ValidatorSortInput = {}): ValidatorConnection!
   }
 `;

@@ -19,19 +19,21 @@ export default `
     jailed: Boolean
     operator_address: String
     status: Int
-    address: String
     delegator_shares: Float
     min_self_delegation: String
     tokens: String
     unbonding_height: Int
     unbonding_time: String
 
+    address: String
     pub_key: ValidatorPubKey
     voting_power: Int
     proposer_priority: String
+
     self_shares: Float
     delegations: [Delegation]
     unbonding_delegations: [UnbondingDelegation]
+    missed_blocks: [MissedBlock]
   }
 
   type UnbondingDelegationEntry {
