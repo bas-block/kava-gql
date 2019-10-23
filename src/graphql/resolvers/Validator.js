@@ -99,8 +99,6 @@ export default {
         validators: {
           $in: validator._id
         }
-      }).populate({
-        path: "validators"
       }).sort({
         height: -1
       });
