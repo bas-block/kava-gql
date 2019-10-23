@@ -59,7 +59,6 @@ export default {
       });
 
       const tendermintValidators = await getTendermintValidators();
-      console.log(results);
 
       let docs = results.docs.map(doc => {
         return {
