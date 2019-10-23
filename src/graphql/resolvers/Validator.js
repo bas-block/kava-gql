@@ -102,7 +102,16 @@ export default {
   Query: {
     allValidators: async (_, args) => {
       try {
-        const query = {};
+        let query = {};
+
+        if (
+          args.filters.status === 0 ||
+          args.filters.status === 1 ||
+          args.filters.status === 2
+        ) {
+          query = { status: args.filters.status };
+        }
+
         const results = await Validator.paginate(query, {
           page: args.pagination.page,
           limit: args.pagination.limit,

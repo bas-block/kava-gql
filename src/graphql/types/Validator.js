@@ -12,6 +12,11 @@ export default `
     moniker
     commission
   }
+  input ValidatorFiltersInput {
+    status: Int = 2
+    jailed: Boolean
+  }
+
   type Validator {
     consensus_pubkey: String
     commission: ValidatorCommission

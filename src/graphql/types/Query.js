@@ -4,7 +4,7 @@ export default `
     allBlocks(pagination: PaginationInput = {}, sort: BlockSortInput = {}): BlockConnection!
     allTransactions(filters: TransactionFiltersInput = {}, pagination: PaginationInput = {}, sort: TransactionSortInput = {}): TransactionConnection!
     allMissedBlocks(filters: MissedBlockFiltersInput = {}, pagination: PaginationInput = {}, sort: MissedBlockSortInput = {}): MissedBlockConnection!
-    allValidators(pagination: PaginationInput = {}, sort: ValidatorSortInput = {}): ValidatorConnection!
+    allValidators(filters: ValidatorFiltersInput = {}, pagination: PaginationInput = {}, sort: ValidatorSortInput = {}): ValidatorConnection!
 
     blocks(
       page: Int

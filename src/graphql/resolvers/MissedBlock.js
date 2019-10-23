@@ -9,7 +9,10 @@ export default {
         query = args.filters;
 
         if (args.filters.height) {
-          query = { height: args.filters.height };
+          query = {
+            height: args.filters.height,
+            validators: { $exists: true }
+          };
         }
       }
 
