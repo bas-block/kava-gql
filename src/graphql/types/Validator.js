@@ -13,7 +13,7 @@ export default `
     commission
   }
   input ValidatorFiltersInput {
-    status: Int = 2
+    status: Int
     jailed: Boolean
   }
 
