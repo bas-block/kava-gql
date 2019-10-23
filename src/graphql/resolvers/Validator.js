@@ -112,8 +112,6 @@ export default {
           query = { status: args.filters.status };
         }
 
-        console.log(args.pagination.limit);
-
         const results = await Validator.paginate(query, {
           page: args.pagination.page,
           limit: args.pagination.limit,

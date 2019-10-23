@@ -1,4 +1,25 @@
+import * as bech32 from "bech32";
+import { sha256 } from "js-sha256";
+import config from "../../config";
+import fetch from "node-fetch";
 import MissedBlock from "../../models/MissedBlockModel";
+
+const getTendermintValidators = () =>
+  fetch(`${config.rpc}/validators`)
+    .then(res => res.json())
+    .then(res => res.result.validators);
+
+const bech32PubkeyToAddress = consensus_pubkey => {
+  // '1624DE6420' is ed25519 pubkey prefix
+  let pubkeyAminoPrefix = Buffer.from("1624DE6420", "hex");
+  let buffer = Buffer.from(
+    bech32.fromWords(bech32.decode(consensus_pubkey).words)
+  );
+  let test = buffer.slice(pubkeyAminoPrefix.length).toString("base64");
+  return sha256(Buffer.from(test, "base64"))
+    .substring(0, 40)
+    .toUpperCase();
+};
 
 export default {
   Query: {
@@ -37,8 +58,33 @@ export default {
         populate: [{ path: "validators", options: { sort: sort_by_moniker } }]
       });
 
+      const tendermintValidators = await getTendermintValidators();
+      let docs = results.docs.map(doc => {
+        return {
+          ...doc,
+          validators: doc._doc.validators
+            .map(validator => {
+              const tendermintData = tendermintValidators.find(
+                v =>
+                  v.address ===
+                  bech32PubkeyToAddress(validator.consensus_pubkey)
+              );
+
+              return { ...validator, ...tendermintData };
+            })
+            .map(validator => {
+              return {
+                ...validator,
+                voting_power: validator.voting_power
+                  ? validator.voting_power
+                  : 0
+              };
+            })
+        };
+      });
+
       return {
-        docs: results.docs,
+        docs: docs,
         pageInfo: {
           total: results.total,
           limit: results.limit,
