@@ -59,27 +59,19 @@ export default {
       });
 
       const tendermintValidators = await getTendermintValidators();
+      console.log(results);
+
       let docs = results.docs.map(doc => {
         return {
           ...doc,
-          validators: doc._doc.validators
-            .map(validator => {
-              const tendermintData = tendermintValidators.find(
-                v =>
-                  v.address ===
-                  bech32PubkeyToAddress(validator.consensus_pubkey)
-              );
+          validators: doc.validators.map(validator => {
+            const tendermintData = tendermintValidators.find(
+              v =>
+                v.address === bech32PubkeyToAddress(validator.consensus_pubkey)
+            );
 
-              return { ...validator, ...tendermintData };
-            })
-            .map(validator => {
-              return {
-                ...validator,
-                voting_power: validator.voting_power
-                  ? validator.voting_power
-                  : 0
-              };
-            })
+            return { ...validator._doc, ...tendermintData };
+          })
         };
       });
 
