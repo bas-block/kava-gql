@@ -20,5 +20,6 @@ export default `
     validators: [Validator]
     active_validators: Int
     total_validators: Int
+    created_at: String
   }
 `;

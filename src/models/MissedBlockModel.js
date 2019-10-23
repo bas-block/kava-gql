@@ -25,6 +25,9 @@ const missedBlockSchema = new Schema(
     },
     total_validators: {
       type: Number
+    },
+    created_at: {
+      type: String
     }
   },
   {

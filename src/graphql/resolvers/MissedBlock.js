@@ -31,8 +31,7 @@ export default {
 
         if (args.filters.height) {
           query = {
-            height: args.filters.height,
-            validators: { $exists: true }
+            height: args.filters.height
           };
         }
       }
@@ -62,7 +61,7 @@ export default {
 
       let docs = results.docs.map(doc => {
         return {
-          ...doc,
+          ...doc._doc,
           validators: doc.validators.map(validator => {
             const tendermintData = tendermintValidators.find(
               v =>

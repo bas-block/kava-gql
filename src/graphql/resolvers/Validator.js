@@ -92,12 +92,15 @@ export default {
     unbonding_delegations: async validator => {
       return await getUnbondingDelegations(validator.operator_address);
     },
-    missed_blocks: async validator =>
-      await MissedBlock.find({
+    missed_blocks: async validator => {
+      const rest = await MissedBlock.find({
         validators: { $in: validator._id }
       }).populate({
         path: "validators"
-      })
+      });
+
+      return rest;
+    }
   },
   Query: {
     allValidators: async (_, args) => {
