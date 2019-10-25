@@ -6,6 +6,8 @@ export default `
     allMissedBlocks(filters: MissedBlockFiltersInput = {}, pagination: PaginationInput = {}, sort: MissedBlockSortInput = {}): MissedBlockConnection!
     allValidators(filters: ValidatorFiltersInput = {}, pagination: PaginationInput = {}, sort: ValidatorSortInput = {}): ValidatorConnection!
 
+    allProposals: [Proposal]
+
     chartValidators(limit: Int = 12): [ChartValidators]
 
     blocks(
