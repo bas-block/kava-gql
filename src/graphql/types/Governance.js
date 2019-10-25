@@ -37,18 +37,12 @@ export default `
     value: ProposalContentValue
   }
 
-  union ProposalContentValue = ProposalContentTypeTextProposal | ProposalContentTypeParameterChangeProposal
-
-  type ProposalContentTypeTextProposal {
-    title: String
-    description: String
-  }
   type ProposalChange {
     subspace: String
     key: String
     value: String
   }
-  type ProposalContentTypeParameterChangeProposal {
+  type ProposalContentValue {
     title: String
     description: String
     changes: [ProposalChange]
