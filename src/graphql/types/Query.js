@@ -7,6 +7,7 @@ export default `
     allValidators(filters: ValidatorFiltersInput = {}, pagination: PaginationInput = {}, sort: ValidatorSortInput = {}): ValidatorConnection!
 
     allProposals: [Proposal]
+    proposal(proposal: Int!): Proposal
 
     chartValidators(limit: Int = 12): [ChartValidators]
 

@@ -3,48 +3,58 @@ import config from "../../config";
 
 const getProposals = () =>
   fetch(`${config.stargate}/gov/proposals`)
-  .then(res => res.json())
-  .then(res => {
-    if (res.result) return res.result;
+    .then(res => res.json())
+    .then(res => {
+      if (res.result) return res.result;
 
-    return res;
-  });
+      return res;
+    });
+
+const getProposal = proposal_id =>
+  fetch(`${config.stargate}/gov/proposals/${proposal_id}`)
+    .then(res => res.json())
+    .then(res => {
+      if (res.error) throw new Error("Unknown proposal");
+      if (res.result) return res.result;
+
+      return res;
+    });
 
 const getProposer = proposal_id =>
   fetch(`${config.stargate}/gov/proposals/${proposal_id}/proposer`)
-  .then(res => res.json())
-  .then(res => {
-    if (res.result && res.result.proposer) return res.result.proposer;
+    .then(res => res.json())
+    .then(res => {
+      if (res.result && res.result.proposer) return res.result.proposer;
 
-    return res;
-  });
+      return res;
+    });
 
 const getVotes = proposal_id =>
   fetch(`${config.stargate}/gov/proposals/${proposal_id}/votes`)
-  .then(res => res.json())
-  .then(res => {
-    if (res.result) return res.result;
+    .then(res => res.json())
+    .then(res => {
+      if (res.result) return res.result;
 
-    return res;
-  });
+      return res;
+    });
 
 const getDeposits = proposal_id =>
   fetch(`${config.stargate}/gov/proposals/${proposal_id}/deposits`)
-  .then(res => res.json())
-  .then(res => {
-    if (res.result) return res.result;
+    .then(res => res.json())
+    .then(res => {
+      if (res.result) return res.result;
 
-    return res;
-  });
+      return res;
+    });
 
 const getTally = proposal_id =>
   fetch(`${config.stargate}/gov/proposals/${proposal_id}/tally`)
-  .then(res => res.json())
-  .then(res => {
-    if (res.result) return res.result;
+    .then(res => res.json())
+    .then(res => {
+      if (res.result) return res.result;
 
-    return res;
-  });
+      return res;
+    });
 
 export default {
   ProposalContent: {
@@ -64,19 +74,20 @@ export default {
   },
   Proposal: {
     proposer: async proposal => {
-      return await getProposer(proposal.id)
+      return await getProposer(proposal.id);
     },
     votes: async proposal => {
-      return await getVotes(proposal.id)
+      return await getVotes(proposal.id);
     },
     deposits: async proposal => {
-      return await getDeposits(proposal.id)
+      return await getDeposits(proposal.id);
     },
     tally: async proposal => {
-      return await getTally(proposal.id)
+      return await getTally(proposal.id);
     }
   },
   Query: {
-    allProposals: async (_, args) => await getProposals()
+    allProposals: async (_, args) => await getProposals(),
+    proposal: async (_, args) => await getProposal(args.proposal)
   }
 };
